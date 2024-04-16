@@ -114,8 +114,7 @@ class BlitzHints extends Module
      */
     private function _registerTemplateRoots(): void
     {
-        Event::on(
-            View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
+        Event::on(View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
             function(RegisterTemplateRootsEvent $event) {
                 $event->roots['blitz-hints'] = $this->getBasePath() . '/templates';
             }

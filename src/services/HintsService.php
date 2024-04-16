@@ -130,21 +130,27 @@ class HintsService extends Component
     {
         $db = Craft::$app->getDb();
 
+        // Check if the stack trace column exists, as it is added by external plugin migrations.
+        $columns = $db->getSchema()->getTableSchema(HintRecord::tableName())->columnNames;
+        $includeStackTrace = in_array('stackTrace', $columns, true);
+
         foreach ($this->_hints as $hint) {
+            $values = ['line' => $hint->line];
+
+            if ($includeStackTrace) {
+                $values['stackTrace'] = implode(',', $hint->stackTrace);
+            }
+
             $db->createCommand()
                 ->upsert(
                     HintRecord::tableName(),
-                    [
+                    array_merge([
                         'fieldId' => $hint->fieldId,
                         'template' => $hint->template,
                         'routeVariable' => $hint->routeVariable,
-                        'line' => $hint->line,
-                        'stackTrace' => implode(',', $hint->stackTrace),
-                    ],
-                    [
-                        'line' => $hint->line,
-                        'stackTrace' => implode(',', $hint->stackTrace),
-                    ])
+                    ], $values),
+                    $values,
+                )
                 ->execute();
         }
     }
@@ -167,7 +173,7 @@ class HintsService extends Component
             '{{%relations}} relations',
         ];
 
-        if ($join[0] == 'INNER JOIN' && in_array($join[1], $relationTypes)) {
+        if ($join[0] === 'INNER JOIN' && in_array($join[1], $relationTypes)) {
             $fieldId = $join[2][2]['relations.fieldId'] ?? null;
 
             if (empty($fieldId)) {

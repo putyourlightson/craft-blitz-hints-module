@@ -1,5 +1,11 @@
 # Release Notes for Blitz Hints
 
+## 1.2.3 - 2024-04-16
+
+### Fixed
+
+- Fixed a bug in which that `stackTrace` column was being written to when it did not exist.
+
 ## 1.2.2 - 2024-03-12
 
 ### Fixed
